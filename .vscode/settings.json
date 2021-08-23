@@ -1,0 +1,5 @@
+{
+    "python.autoComplete.extraPaths": [
+        "/Users/papr/work/pupil/pupil_src/shared_modules"
+    ]
+}
