@@ -67,6 +67,7 @@ def fake_gpool(scene_cam_intrinsics, app="pipeline", min_calibration_confidence=
     g_pool = types.SimpleNamespace()
     g_pool.capture = types.SimpleNamespace()
     g_pool.capture.intrinsics = scene_cam_intrinsics
+    g_pool.capture.frame_size = scene_cam_intrinsics.resolution
     g_pool.get_timestamp = time.perf_counter
     g_pool.app = app
     g_pool.min_calibration_confidence = min_calibration_confidence
