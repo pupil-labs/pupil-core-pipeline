@@ -84,14 +84,31 @@ def patch_plugin_notify_all(plugin_class):
 
 
 @click.command()
-def main():
+@click.option(
+    "--core_shared_modules_loc",
+    required=False,
+    type=click.Path(exists=True),
+    envvar="CORE_SHARED_MODULES_LOCATION",
+)
+@click.option(
+    "--recording_loc",
+    required=True,
+    type=click.Path(exists=True),
+    envvar="RECORDING_LOCATION",
+)
+@click.option(
+    "--ref_data_loc",
+    required=True,
+    type=click.Path(exists=True),
+    envvar="REF_DATA_LOCATION",
+)
+def main(core_shared_modules_loc, recording_loc, ref_data_loc):
     logging.basicConfig(level=logging.DEBUG)
     logging.getLogger("numexpr").setLevel(logging.WARNING)
     logging.getLogger("OpenGL").setLevel(logging.WARNING)
 
-    load_dotenv()
-    if "CORE_SHARED_MODULES_LOCATION" in os.environ:
-        sys.path.append(os.environ["CORE_SHARED_MODULES_LOCATION"])
+    if core_shared_modules_loc:
+        sys.path.append(core_shared_modules_loc)
     else:
         logging.warning("Core source location unknown. Imports might fail.")
 
@@ -103,11 +120,11 @@ def main():
     mapping_method = mapping_methods_by_label[mapping_method_label]
     patch_plugin_notify_all(mapping_method)
 
-    ref_data_loc = os.environ["REF_DATA_LOCATION"]
-    pupil_data_loc = os.environ["RECORDING_LOCATION"] + "/pupil.pldata"
-    intrinsics_loc = os.environ["RECORDING_LOCATION"] + "/world.intrinsics"
+    pupil_data_loc = recording_loc + "/pupil.pldata"
+    intrinsics_loc = recording_loc + "/world.intrinsics"
     calibrate_and_validate(ref_data_loc, pupil_data_loc, intrinsics_loc, mapping_method)
 
 
 if __name__ == "__main__":
+    load_dotenv()
     main()

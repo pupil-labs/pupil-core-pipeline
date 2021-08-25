@@ -12,7 +12,7 @@ pip install -e .
 
 #### Dependencies
 1. Install [Pupil Core](https://github.com/pupil-labs/pupil/) source code and dependencies
-2. Create `.env` file with the following content:
+2. \[Optional\] Create `.env` file with the following content:
 ```
 CORE_SHARED_MODULES_LOCATION={Full path to .../pupil/pupil_src/shared_modules}
 RECORDING_LOCATION={Full path to a recording}
@@ -24,3 +24,5 @@ Execute from the root of this repository
 ```sh
 python -m core.pipeline
 ```
+See `python -m core.pipeline --help` for help. Alternatively, the options can be read
+from the `.env` file.
