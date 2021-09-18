@@ -63,7 +63,7 @@ def fit_gazer(mapping_method, ref_data, pupil_data, scene_cam_intrinsics):
     )
 
 
-def fake_gpool(scene_cam_intrinsics, app="pipeline", min_calibration_confidence=0.8):
+def fake_gpool(scene_cam_intrinsics, app="pipeline", min_calibration_confidence=0.0):
     g_pool = types.SimpleNamespace()
     g_pool.capture = types.SimpleNamespace()
     g_pool.capture.intrinsics = scene_cam_intrinsics
@@ -120,7 +120,7 @@ def main(core_shared_modules_loc, recording_loc, ref_data_loc):
     mapping_method = mapping_methods_by_label[mapping_method_label]
     patch_plugin_notify_all(mapping_method)
 
-    pupil_data_loc = recording_loc + "/pupil.pldata"
+    pupil_data_loc = recording_loc + "/offline_data/offline_pupil.pldata"
     intrinsics_loc = recording_loc + "/world.intrinsics"
     calibrate_and_validate(ref_data_loc, pupil_data_loc, intrinsics_loc, mapping_method)
 
