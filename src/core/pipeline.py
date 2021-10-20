@@ -26,7 +26,7 @@ def save_gaze_data(gaze, gaze_ts, recording_loc, export=True):
     if export:
         from raw_data_exporter import Gaze_Positions_Exporter
         import player_methods as pm
-        export_directory = os.path.join(recording_loc, "pipeline-exports")
+        export_directory = os.path.join(recording_loc, "exports/pipeline")
         os.makedirs(export_directory, exist_ok=True)
         gaze_bisector = pm.Bisector(gaze, gaze_ts)
         gaze_positions_exporter = Gaze_Positions_Exporter()
