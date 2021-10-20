@@ -13,56 +13,64 @@ from dotenv import load_dotenv
 
 def save_gaze_data(gaze, gaze_ts, recording_loc, export=True):
     import file_methods as fm
+
     directory = os.path.join(recording_loc, "pipeline-gaze-mappings")
     os.makedirs(directory, exist_ok=True)
-    file_name = 'pipeline' #self._gaze_mapping_file_name(gaze_mapper)
+    file_name = "pipeline"  # self._gaze_mapping_file_name(gaze_mapper)
     with fm.PLData_Writer(directory, file_name) as writer:
         for gaze_ts_uz, gaze_uz in zip(gaze_ts, gaze):
             writer.append_serialized(
                 gaze_ts_uz, topic="gaze", datum_serialized=gaze_uz.serialized
             )
     logging.info(f"Gaze data saved to {directory}.")
-    
+
     if export:
-        from raw_data_exporter import Gaze_Positions_Exporter
         import player_methods as pm
-        export_directory = os.path.join(recording_loc, "exports/pipeline")
+        from raw_data_exporter import Gaze_Positions_Exporter
+
+        export_directory = os.path.join(recording_loc, "pipeline-exports")
         os.makedirs(export_directory, exist_ok=True)
         gaze_bisector = pm.Bisector(gaze, gaze_ts)
         gaze_positions_exporter = Gaze_Positions_Exporter()
         gaze_positions_exporter.csv_export_write(
             positions_bisector=gaze_bisector,
             timestamps=gaze_ts,
-            export_window=[gaze_bisector.data_ts[0]-1, gaze_bisector.data_ts[len(gaze_bisector.data_ts)-1]+1],
+            export_window=[
+                gaze_bisector.data_ts[0] - 1,
+                gaze_bisector.data_ts[len(gaze_bisector.data_ts) - 1] + 1,
+            ],
             export_dir=export_directory,
         )
         logging.info(f"Gaze data exported to {export_directory}.")
 
+
 def map_pupil_data(gazer, pupil_data):
     import file_methods as fm
+
     logging.info("Mapping pupil data to gaze data.")
     gaze = []
     gaze_ts = []
-    
+
     first_ts = pupil_data[0]["timestamp"]
     last_ts = pupil_data[-1]["timestamp"]
     ts_span = last_ts - first_ts
     curr_ts = first_ts
-    
+
     prev_prog = 0.0
     for gaze_datum in gazer.map_pupil_to_gaze(pupil_data):
         curr_ts = max(curr_ts, gaze_datum["timestamp"])
         progress = (curr_ts - first_ts) / ts_span
-        if floor(progress*100) != floor(prev_prog*100):
+        if floor(progress * 100) != floor(prev_prog * 100):
             logging.info(f"Gaze Mapping Progress: {floor(progress*100)}%")
         prev_prog = progress
-        #result = (curr_ts, fm.Serialized_Dict(gaze_datum))
-        
+        # result = (curr_ts, fm.Serialized_Dict(gaze_datum))
+
         gaze.append(fm.Serialized_Dict(gaze_datum))
         gaze_ts.append(curr_ts)
-    
+
     logging.info("Pupil data mapped to gaze data.")
     return gaze, gaze_ts
+
 
 def calibrate_and_validate(
     ref_loc, pupil_loc, scene_cam_intrinsics_loc, mapping_method
@@ -139,10 +147,7 @@ def patch_plugin_notify_all(plugin_class):
 
 
 @click.command()
-@click.option(
-    "--skip_pupil_detection",
-    is_flag=True
-)
+@click.option("--skip_pupil_detection", is_flag=True)
 @click.option(
     "--core_shared_modules_loc",
     required=False,
@@ -178,19 +183,22 @@ def main(skip_pupil_detection, core_shared_modules_loc, recording_loc, ref_data_
     )
     mapping_method = mapping_methods_by_label[mapping_method_label]
     patch_plugin_notify_all(mapping_method)
-    
+
     if not skip_pupil_detection:
         from core.pupil_detection import perform_pupil_detection
+
         logging.info("Performing pupil detection on eye videos. This may take a while.")
         perform_pupil_detection(recording_loc)
         logging.info("Pupil detection complete.")
-    
+
     pupil_data_loc = recording_loc + "/offline_data/offline_pupil.pldata"
     intrinsics_loc = recording_loc + "/world.intrinsics"
-    calibrated_gazer, pupil_data = calibrate_and_validate(ref_data_loc, pupil_data_loc, intrinsics_loc, mapping_method)
+    calibrated_gazer, pupil_data = calibrate_and_validate(
+        ref_data_loc, pupil_data_loc, intrinsics_loc, mapping_method
+    )
     gaze, gaze_ts = map_pupil_data(calibrated_gazer, pupil_data)
     save_gaze_data(gaze, gaze_ts, recording_loc)
-    
+
 
 if __name__ == "__main__":
     load_dotenv()
