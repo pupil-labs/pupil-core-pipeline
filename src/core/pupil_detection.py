@@ -97,6 +97,15 @@ def save_datums_to_pldata(datums, save_location):
     fm.save_object(session_data, cache_path)
 
 
+def perform_pupil_detection(recording_loc):
+    scene_cam_intrinsics_loc = recording_loc + "/world.intrinsics"
+    scene_cam_intrinsics = load_intrinsics(scene_cam_intrinsics_loc)
+    datums = get_datum_dicts_from_eyes(['eye0.mp4', 'eye1.mp4'], recording_loc, scene_cam_intrinsics)
+    logging.info(f"Completed detection of pupils.")
+    save_datums_to_pldata(datums, recording_loc+'/offline_data')
+    logging.info(f"Saved pldata to disk at {recording_loc+'/offline_data'}.")
+
+
 @click.command()
 @click.option(
     "--core_shared_modules_loc",
@@ -126,12 +135,7 @@ def main(core_shared_modules_loc, recording_loc, ref_data_loc):
     else:
         logging.warning("Core source location unknown. Imports might fail.")
     
-    scene_cam_intrinsics_loc = recording_loc + "/world.intrinsics"
-    scene_cam_intrinsics = load_intrinsics(scene_cam_intrinsics_loc)
-    datums = get_datum_dicts_from_eyes(['eye0.mp4', 'eye1.mp4'], recording_loc, scene_cam_intrinsics)
-    logging.info(f"Completed detection of pupils.")
-    save_datums_to_pldata(datums, recording_loc+'/offline_data')
-    logging.info("Saved pldata to disk.")
+    perform_pupil_detection(recording_loc)
 
 
 if __name__ == "__main__":
