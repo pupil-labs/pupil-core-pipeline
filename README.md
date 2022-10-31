@@ -21,7 +21,7 @@ RECORDING_LOCATION={Full path to a recording}
 REF_DATA_LOCATION=${RECORDING_LOCATION}/offline_data/reference_locations.msgpack
 ```
 
-### Pipeline execution
+### Post-hoc pipeline execution
 Execute from the root of this repository
 ```sh
 python -m core.pipeline

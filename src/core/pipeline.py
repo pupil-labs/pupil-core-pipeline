@@ -10,6 +10,8 @@ from math import floor
 import click
 from dotenv import load_dotenv
 
+from . import _default_shared_modules_loc
+
 
 def save_gaze_data(gaze, gaze_ts, recording_loc, export=True):
     import file_methods as fm
@@ -153,14 +155,17 @@ def patch_plugin_notify_all(plugin_class):
     required=False,
     type=click.Path(exists=True),
     envvar="CORE_SHARED_MODULES_LOCATION",
+    default=_default_shared_modules_loc(),
 )
 @click.option(
+    "-rec",
     "--recording_loc",
     required=True,
     type=click.Path(exists=True),
     envvar="RECORDING_LOCATION",
 )
 @click.option(
+    "-ref",
     "--ref_data_loc",
     required=True,
     type=click.Path(exists=True),
