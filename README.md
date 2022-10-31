@@ -2,6 +2,8 @@
 
 ### Development installation
 
+Requires Python 3.8 or newer
+
 ```sh
 # 1. clone repository and change curren working directory to clone
 # 2. Update pip
