@@ -5,20 +5,23 @@
 Requires Python 3.8 or newer
 
 ```sh
-# 1. clone repository and change curren working directory to clone
-# 2. Update pip
-pip install -U pip
-# 3. Editable install of core pipeline
-pip install -e .
+pip install git+https://github.com/papr/pupil-core-pipeline
 ```
 
-#### Dependencies
-1. Install [Pupil Core](https://github.com/pupil-labs/pupil/) source code and dependencies
-2. \[Optional\] Create `.env` file with the following content:
+### Recalculate accuracy and precision for recorded calibrations
+
+This utility reads the reference and pupil data that was collected during calibrations
+of a given recording, and recalculates the accuracy and precision of it. Optionally,
+it can export the values to a json file.
+
 ```
-CORE_SHARED_MODULES_LOCATION={Full path to .../pupil/pupil_src/shared_modules}
-RECORDING_LOCATION={Full path to a recording}
-REF_DATA_LOCATION=${RECORDING_LOCATION}/offline_data/reference_locations.msgpack
+Usage: pupil_core_accuracy [OPTIONS] RECORDING_LOC
+
+Options:
+  --core_shared_modules_loc PATH
+  -o, --output FILE               If given, results will be written as json to
+                                  this location, e.g. `output.json`
+  --help                          Show this message and exit.
 ```
 
 ### Post-hoc pipeline execution
@@ -28,3 +31,13 @@ python -m core.pipeline
 ```
 See `python -m core.pipeline --help` for help. Alternatively, the options can be read
 from the `.env` file.
+
+### Config from environment variables
+Some of the command line arguments can be set a environment variables. This allows
+reading these values from an `.env` file with the following content:
+
+```
+CORE_SHARED_MODULES_LOCATION={Full path to .../pupil/pupil_src/shared_modules}
+RECORDING_LOCATION={Full path to a recording}
+REF_DATA_LOCATION=${RECORDING_LOCATION}/offline_data/reference_locations.msgpack
+```
