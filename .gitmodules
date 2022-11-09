@@ -1,4 +1,4 @@
 [submodule "src/core/_core_plugins"]
 	path = src/core/_core_plugins
-	url = git@github.com:pupil-labs/pupil.git
+	url = https://github.com/pupil-labs/pupil.git
 	branch = develop
